@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Développement Mobile Android — Guide de révision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0a0c10;
+  --bg2: #0f1218;
+  --bg3: #161b24;
+  --bg4: #1c2332;
+  --border: #1e2a3a;
+  --border2: #243040;
+  --green: #3ddc84;
+  --green-dim: #1a4a30;
+  --green-glow: rgba(61,220,132,0.15);
+  --cyan: #00d4ff;
+  --cyan-dim: #003a4a;
+  --purple: #a78bfa;
+  --purple-dim: #2a1f4a;
+  --amber: #fbbf24;
+  --amber-dim: #3a2a05;
+  --coral: #f87171;
+  --coral-dim: #3a1212;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #475569;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+  --nav-w: 220px;
+  --radius: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated background grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(61,220,132,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61,220,132,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ——— SIDEBAR ——— */
+#sidebar {
+  width: var(--nav-w);
+  min-width: var(--nav-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.sidebar-header {
+  padding: 20px 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.logo-sub { font-size: 10px; color: var(--text3); font-weight: 400; margin-top: 1px; }
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 14px 16px 6px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--text2);
+  border-radius: 0;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--green);
+  transform: scaleY(0);
+  transition: transform 0.2s;
+}
+
+.nav-btn:hover {
+  background: var(--bg3);
+  color: var(--text);
+}
+
+.nav-btn.active {
+  background: var(--bg3);
+  color: var(--green);
+  font-weight: 500;
+}
+
+.nav-btn.active::before {
+  transform: scaleY(1);
+}
+
+.nav-btn i { font-size: 16px; flex-shrink: 0; opacity: 0.8; }
+.nav-btn.active i { opacity: 1; }
+
+/* ——— MAIN CONTENT ——— */
+#content {
+  flex: 1;
+  padding: 2.5rem 3rem;
+  max-width: 900px;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* ——— TYPOGRAPHY ——— */
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1 .accent { color: var(--green); }
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 2rem 0 0.7rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h2::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 16px;
+  background: var(--green);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 1rem 0 0.4rem;
+  color: var(--text);
+}
+
+p {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--text2);
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: var(--text3);
+  margin-bottom: 1.8rem;
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+}
+
+.subtitle::before {
+  content: '// ';
+  color: var(--green);
+  opacity: 0.7;
+}
+
+ul { padding-left: 0; margin-bottom: 0.75rem; list-style: none; }
+ul li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text2);
+  padding: 3px 0 3px 20px;
+  position: relative;
+}
+ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-size: 11px;
+  top: 6px;
+}
+
+/* ——— TAGS ——— */
+.tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0 3px 3px 0;
+  letter-spacing: 0.04em;
+}
+.tag-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+.tag-teal   { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,212,255,0.2); }
+.tag-coral  { background: var(--coral-dim); color: var(--coral); border: 1px solid rgba(248,113,113,0.2); }
+.tag-blue   { background: #0d2040; color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+.tag-amber  { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.tag-green  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(61,220,132,0.2); }
+
+/* ——— CARDS ——— */
+.card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 0 20px rgba(61,220,132,0.05);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.card h3 { margin-top: 0; }
+.card h3 i { margin-right: 5px; color: var(--green); }
+
+/* ——— TABLES ——— */
+.table-wrap { overflow-x: auto; margin-bottom: 1rem; border-radius: var(--radius); border: 1px solid var(--border); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  background: var(--bg4);
+  font-weight: 600;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 11px;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--mono);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+  color: var(--text2);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ——— CODE ——— */
+code {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--bg4);
+  color: var(--cyan);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+}
+
+pre {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  background: var(--bg2);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green);
+  overflow-x: auto;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: #a8d5b5;
+  position: relative;
+}
+
+pre::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 10px;
+  color: var(--text3);
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ——— ALERTS & TIPS ——— */
+.alert {
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.2);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 13.5px;
+  color: var(--amber);
+  margin-bottom: 0.75rem;
+}
+
+.tip {
+  background: rgba(61,220,132,0.06);
+  border: 1px solid rgba(61,220,132,0.2);
+  border-left: 3px solid var(--green);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 13.5px;
+  color: var(--green);
+  margin-bottom: 0.75rem;
+}
+
+/* ——— MNEMONIC ——— */
+.mnemonic {
+  background: var(--purple-dim);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-left: 3px solid var(--purple);
+  border-radius: var(--radius);
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.mnemonic-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--mono);
+}
+
+.mnemonic p { font-size: 14px; color: #c4b5fd; margin: 0; }
+.mnemonic p + p { margin-top: 6px; font-size: 12.5px; color: var(--text3); }
+
+/* ——— MINDMAP ——— */
+.mindmap {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 2;
+  background: var(--bg2);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  white-space: pre;
+  color: var(--text2);
+}
+
+/* ——— LIFECYCLE ——— */
+.lifecycle-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin: 1.5rem 0;
+}
+
+.lc-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.lc-pill {
+  flex: 1;
+  text-align: center;
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--mono);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: box-shadow 0.2s;
+}
+
+.lc-pill:hover {
+  box-shadow: 0 0 15px rgba(61,220,132,0.15);
+}
+
+.lc-arrow {
+  font-size: 16px;
+  color: var(--text3);
+  line-height: 1;
+  padding: 3px 0;
+  text-align: center;
+  width: 100%;
+  max-width: 460px;
+  font-family: var(--mono);
+}
+
+.lc-desc {
+  font-size: 12px;
+  color: var(--text3);
+  min-width: 145px;
+  line-height: 1.5;
+}
+
+/* ——— FLASHCARDS ——— */
+#fc-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#fc-controls button {
+  font-size: 12.5px;
+  font-family: var(--mono);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+#fc-controls button:hover {
+  background: var(--green-dim);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+#fc-count {
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--mono);
+  margin-left: 4px;
+}
+
+.flashcard {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.flashcard:hover {
+  border-color: var(--green);
+  box-shadow: 0 0 16px rgba(61,220,132,0.08);
+  transform: translateX(2px);
+}
+
+.fc-q {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.fc-a {
+  font-size: 13.5px;
+  color: var(--cyan);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: none;
+  line-height: 1.65;
+  font-family: var(--mono);
+}
+
+.fc-a.visible { display: block; animation: fadeIn 0.2s ease; }
+
+.fc-badge {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--bg4);
+  color: var(--text3);
+  border: 1px solid var(--border2);
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.fc-num {
+  color: var(--text3);
+  font-size: 11px;
+  font-family: var(--mono);
+  min-width: 30px;
+}
+
+/* ——— ANDROID ARCH LAYERS ——— */
+.arch-layer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+
+.arch-layer:hover { transform: translateX(3px); }
+.arch-layer .layer-num { font-family: var(--mono); font-size: 11px; color: var(--text3); min-width: 55px; }
+.arch-layer .layer-name { font-weight: 600; font-size: 13.5px; }
+.arch-layer .layer-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* page header badge */
+.page-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-dim);
+  border: 1px solid rgba(61,220,132,0.25);
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+/* scrollbar for content */
+#content::-webkit-scrollbar { width: 5px; }
+#content::-webkit-scrollbar-track { background: transparent; }
+#content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* button (global) */
+button {
+  font-family: var(--sans);
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🤖</div>
+      <div>
+        <div class="logo-text">Android Dev</div>
+        <div class="logo-sub">Guide de révision</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section-label">Architecture</div>
+  <button class="nav-btn active" onclick="show('s1')" id="n1"><i class="ti ti-cpu"></i>SoC &amp; CPU</button>
+  <button class="nav-btn" onclick="show('s2')" id="n2"><i class="ti ti-device-mobile"></i>OS Mobiles</button>
+  <button class="nav-btn" onclick="show('s3')" id="n3"><i class="ti ti-layers"></i>Types d'apps</button>
+
+  <div class="nav-section-label">Android</div>
+  <button class="nav-btn" onclick="show('s4')" id="n4"><i class="ti ti-brand-android"></i>Archi Android</button>
+  <button class="nav-btn" onclick="show('s5')" id="n5"><i class="ti ti-components"></i>Composants</button>
+  <button class="nav-btn" onclick="show('s6')" id="n6"><i class="ti ti-refresh"></i>Cycle de vie</button>
+  <button class="nav-btn" onclick="show('s7')" id="n7"><i class="ti ti-arrow-right-circle"></i>Intents</button>
+  <button class="nav-btn" onclick="show('s8')" id="n8"><i class="ti ti-file-code"></i>Manifest &amp; Res</button>
+  <button class="nav-btn" onclick="show('s9')" id="n9"><i class="ti ti-database"></i>SQLite</button>
+  <button class="nav-btn" onclick="show('s10')" id="n10"><i class="ti ti-cloud"></i>Web Services</button>
+
+  <div class="nav-section-label">Révision</div>
+  <button class="nav-btn" onclick="show('fc')" id="nfc"><i class="ti ti-cards"></i>Flashcards (40+)</button>
+  <button class="nav-btn" onclick="show('mm')" id="nmm"><i class="ti ti-sitemap"></i>Mind Maps</button>
+  <button class="nav-btn" onclick="show('mn')" id="nmn"><i class="ti ti-bulb"></i>Mnémotechniques</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="content">
+
+<!-- S1: SoC & Architecture -->
+<div id="s1" class="section active">
+  <div class="page-badge"><i class="ti ti-cpu" style="font-size:12px"></i> Architecture Matérielle</div>
+  <h1>Architecture des <span class="accent">microprocesseurs</span> mobiles</h1>
+  <p class="subtitle">SoC, CPU, GPU, DSP, Modem, Sécurité — CISC vs RISC — ARM vs x86</p>
+
+  <h2>Qu'est-ce qu'un SoC ?</h2>
+  <p>Un <strong style="color:var(--text)">SoC (System on a Chip)</strong> est un circuit intégré unique qui regroupe tous les composants essentiels d'un ordinateur sur une seule puce. C'est le "cerveau complet" d'un smartphone.</p>
+  <p>Analogie : Si un PC de bureau est une ville avec des bâtiments séparés (CPU dans un quartier, GPU dans un autre), le SoC est une ville miniaturisée sur un timbre-poste — tout est là, compact et optimisé.</p>
+
+  <div class="card-grid">
+    <div class="card"><h3><i class="ti ti-cpu"></i> CPU</h3><p style="font-size:13px">Unité Centrale de Traitement. Exécute les instructions logiques et arithmétiques. Ex : Cortex-A78 dans Snapdragon 888.</p></div>
+    <div class="card"><h3><i class="ti ti-chart-bar"></i> GPU</h3><p style="font-size:13px">Unité de traitement graphique. Gère l'affichage, les jeux, le rendu 3D. Ex : Adreno 660 (Qualcomm).</p></div>
+    <div class="card"><h3><i class="ti ti-wave-sine"></i> DSP</h3><p style="font-size:13px">Digital Signal Processor. Traite les signaux audio, voix, capteurs sans mobiliser le CPU.</p></div>
+    <div class="card"><h3><i class="ti ti-wifi"></i> Modem</h3><p style="font-size:13px">Gère les communications radio : 4G/5G, Wi-Fi, Bluetooth. Intégré ou externe selon le SoC.</p></div>
+    <div class="card"><h3><i class="ti ti-lock"></i> Sécurité (TEE)</h3><p style="font-size:13px">Enclave sécurisée : stocke les clés biométriques, mots de passe, données sensibles.</p></div>
+    <div class="card"><h3><i class="ti ti-brain"></i> NPU / ISP</h3><p style="font-size:13px">NPU : Neural Processing Unit pour l'IA. ISP : Image Signal Processor pour la photo.</p></div>
+  </div>
+
+  <h2>CISC vs RISC</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Critère</th><th>CISC (x86 — Intel/AMD)</th><th>RISC (ARM)</th></tr>
+    <tr><td>Signification</td><td>Complex Instruction Set</td><td>Reduced Instruction Set</td></tr>
+    <tr><td>Instructions</td><td>Peu, mais complexes</td><td>Beaucoup, simples</td></tr>
+    <tr><td>Longueur instr.</td><td>Variable (1–15 octets)</td><td>Fixe (4 octets)</td></tr>
+    <tr><td>Cycles / instruction</td><td>Plusieurs cycles</td><td>1 cycle (pipeline efficace)</td></tr>
+    <tr><td>Consommation</td><td>Élevée</td><td><span style="color:var(--green)">Faible — idéal mobile</span></td></tr>
+    <tr><td>Exemples</td><td>Intel Core, AMD Ryzen</td><td>Apple M-series, Snapdragon</td></tr>
+    <tr><td>Utilisé dans</td><td>PC, serveurs</td><td>Smartphones, tablettes, IoT</td></tr>
+  </table>
+  </div>
+
+  <div class="tip">ARM domine le marché mobile à plus de 95% car sa consommation énergétique réduite préserve l'autonomie de la batterie.</div>
+
+  <h2>Architecture ARM : Big.LITTLE</h2>
+  <p>Les SoC modernes combinent des cœurs <strong style="color:var(--coral)">Big</strong> (puissants, pour les tâches lourdes) et <strong style="color:var(--cyan)">LITTLE</strong> (économes, pour les tâches légères).</p>
+  <div class="card" style="font-family:var(--mono);font-size:13px;color:var(--text2)">
+    Snapdragon 888 : <span style="color:var(--coral)">1× Cortex-X1</span> (performance max) + <span style="color:var(--amber)">3× Cortex-A78</span> (performance) + <span style="color:var(--cyan)">4× Cortex-A55</span> (efficacité)
+  </div>
+</div>
+
+<!-- S2: OS Mobiles -->
+<div id="s2" class="section">
+  <div class="page-badge"><i class="ti ti-device-mobile" style="font-size:12px"></i> Systèmes d'exploitation</div>
+  <h1>Systèmes d'exploitation <span class="accent">mobiles</span></h1>
+  <p class="subtitle">iOS, Android, Symbian, BlackBerry OS, Windows Phone, WebOS...</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>OS</th><th>Créateur</th><th>Kernel</th><th>Langage</th><th>Statut</th></tr>
+    <tr><td><span class="tag tag-blue">iOS</span></td><td>Apple</td><td>XNU (Darwin)</td><td>Swift / Obj-C</td><td><span style="color:var(--green)">Actif</span></td></tr>
+    <tr><td><span class="tag tag-green">Android</span></td><td>Google</td><td>Linux</td><td>Java / Kotlin</td><td><span style="color:var(--green)">Actif</span></td></tr>
+    <tr><td><span class="tag tag-purple">Symbian</span></td><td>Nokia</td><td>EKA2</td><td>C++</td><td><span style="color:var(--text3)">Abandonné 2013</span></td></tr>
+    <tr><td><span class="tag tag-coral">BlackBerry OS</span></td><td>RIM</td><td>QNX</td><td>Java (BB)</td><td><span style="color:var(--text3)">Abandonné 2013</span></td></tr>
+    <tr><td><span class="tag tag-blue">Windows Phone</span></td><td>Microsoft</td><td>Windows CE/NT</td><td>C# / .NET</td><td><span style="color:var(--text3)">Abandonné 2019</span></td></tr>
+    <tr><td><span class="tag tag-teal">WebOS</span></td><td>Palm → LG</td><td>Linux</td><td>HTML/JS/CSS</td><td><span style="color:var(--text3)">Smart TV uniquement</span></td></tr>
+    <tr><td><span class="tag tag-amber">HarmonyOS</span></td><td>Huawei</td><td>LiteOS / Linux</td><td>Java / C++</td><td><span style="color:var(--amber)">Actif (Chine)</span></td></tr>
+  </table>
+  </div>
+
+  <h2>Android vs iOS — Comparatif détaillé</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Aspect</th><th>Android</th><th>iOS</th></tr>
+    <tr><td>Open source</td><td><span style="color:var(--green)">Oui (AOSP)</span></td><td><span style="color:var(--coral)">Non (propriétaire)</span></td></tr>
+    <tr><td>Personnalisation</td><td>Très élevée</td><td>Limitée</td></tr>
+    <tr><td>Distribution apps</td><td>Play Store + APK direct</td><td>App Store uniquement</td></tr>
+    <tr><td>Fragmentation</td><td>Forte (milliers d'appareils)</td><td>Faible (matériel unifié)</td></tr>
+    <tr><td>Mises à jour</td><td>Selon constructeur</td><td>Directes via Apple</td></tr>
+    <tr><td>Part de marché</td><td><span style="color:var(--green)">~72% mondial</span></td><td>~27% mondial</td></tr>
+  </table>
+  </div>
+
+  <h2>Évolution d'Android</h2>
+  <p>Android suit un alphabet de desserts : <span class="tag tag-green">Cupcake</span> <span class="tag tag-green">Donut</span> <span class="tag tag-green">Éclair</span> <span class="tag tag-green">Froyo</span> <span class="tag tag-green">Gingerbread</span> <span class="tag tag-green">Honeycomb</span> <span class="tag tag-green">ICS</span> <span class="tag tag-green">Jelly Bean</span> <span class="tag tag-green">KitKat</span> <span class="tag tag-green">Lollipop</span> <span class="tag tag-green">Marshmallow</span> <span class="tag tag-green">Nougat</span> <span class="tag tag-green">Oreo</span> <span class="tag tag-green">Pie</span> <span class="tag tag-green">Q/10</span> <span class="tag tag-green">R/11</span> <span class="tag tag-green">S/12</span> <span class="tag tag-green">T/13</span> <span class="tag tag-green">U/14</span></p>
+</div>
+
+<!-- S3: Types d'apps -->
+<div id="s3" class="section">
+  <div class="page-badge"><i class="ti ti-layers" style="font-size:12px"></i> Types d'applications</div>
+  <h1>Types d'applications <span class="accent">mobiles</span></h1>
+  <p class="subtitle">Native, Web App, Hybride — avantages, inconvénients et cas d'usage</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Critère</th><th>Native</th><th>Web App</th><th>Hybride</th></tr>
+    <tr><td>Développement</td><td>Java/Kotlin, Swift</td><td>HTML, CSS, JS</td><td>Ionic, RN, Flutter</td></tr>
+    <tr><td>Performance</td><td><span style="color:var(--green)">Maximale</span></td><td><span style="color:var(--coral)">Limitée</span></td><td>Intermédiaire</td></tr>
+    <tr><td>Accès hardware</td><td><span style="color:var(--green)">Complet</span></td><td>Limité</td><td>Via plugins</td></tr>
+    <tr><td>Distribution</td><td>App Store / Play Store</td><td>Navigateur</td><td>App Store / Play Store</td></tr>
+    <tr><td>Coût</td><td>Élevé (2 codes)</td><td><span style="color:var(--green)">Faible</span></td><td>Moyen (1 code)</td></tr>
+    <tr><td>Offline</td><td>Oui</td><td>Limité (PWA)</td><td>Partiel</td></tr>
+    <tr><td>Exemples</td><td>WhatsApp, Google Maps</td><td>Twitter Lite</td><td>Instagram (RN)</td></tr>
+  </table>
+  </div>
+
+  <div class="card">
+    <h3>Frameworks hybrides populaires</h3>
+    <ul>
+      <li><code>React Native</code> — JavaScript, composants natifs réels (Facebook)</li>
+      <li><code>Flutter</code> — Dart, rendu propre Skia/Impeller (Google)</li>
+      <li><code>Ionic</code> — HTML/CSS/JS + Capacitor, basé WebView</li>
+      <li><code>Xamarin</code> — C# .NET, Microsoft (remplacé par MAUI)</li>
+    </ul>
+  </div>
+
+  <div class="alert">Une <strong>PWA (Progressive Web App)</strong> est une Web App qui peut s'installer sur l'écran d'accueil et fonctionner offline grâce aux Service Workers.</div>
+</div>
+
+<!-- S4: Architecture Android -->
+<div id="s4" class="section">
+  <div class="page-badge"><i class="ti ti-brand-android" style="font-size:12px"></i> Architecture</div>
+  <h1>Architecture <span class="accent">Android</span></h1>
+  <p class="subtitle">5 couches empilées — du Kernel Linux jusqu'aux Applications utilisateur</p>
+
+  <div style="margin: 1.5rem 0;">
+    <div class="arch-layer" style="border-left:3px solid var(--purple)">
+      <div class="layer-num">Couche 5</div>
+      <div><div class="layer-name" style="color:var(--purple)">Applications</div><div class="layer-desc">Apps utilisateur : Contacts, Galerie, Gmail, apps tierces...</div></div>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;margin:2px 0;">↑</div>
+    <div class="arch-layer" style="border-left:3px solid var(--green)">
+      <div class="layer-num">Couche 4</div>
+      <div><div class="layer-name" style="color:var(--green)">Application Framework</div><div class="layer-desc">Activity Manager, Window Manager, Content Providers, Notification Manager...</div></div>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;margin:2px 0;">↑</div>
+    <div class="arch-layer" style="border-left:3px solid var(--cyan)">
+      <div class="layer-num">Couche 3</div>
+      <div><div class="layer-name" style="color:var(--cyan)">Android Runtime (ART) + Libraries</div><div class="layer-desc">Exécution des apps. Libs C/C++ natives (WebKit, OpenGL, SQLite, Media...).</div></div>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;margin:2px 0;">↑</div>
+    <div class="arch-layer" style="border-left:3px solid var(--coral)">
+      <div class="layer-num">Couche 2</div>
+      <div><div class="layer-name" style="color:var(--coral)">Hardware Abstraction Layer (HAL)</div><div class="layer-desc">Interface entre les drivers matériels et les couches supérieures.</div></div>
+    </div>
+    <div style="text-align:center;color:var(--text3);font-size:18px;margin:2px 0;">↑</div>
+    <div class="arch-layer" style="border-left:3px solid var(--text3)">
+      <div class="layer-num">Couche 1</div>
+      <div><div class="layer-name">Linux Kernel</div><div class="layer-desc">Drivers (Binder IPC, USB, WiFi, Bluetooth, caméra), gestion mémoire, processus.</div></div>
+    </div>
+  </div>
+
+  <h2>Dalvik VM vs ART</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Critère</th><th>Dalvik VM</th><th>ART (Android Runtime)</th></tr>
+    <tr><td>Introduit</td><td>Android 1.0 (2008)</td><td>Par défaut depuis Android 5.0</td></tr>
+    <tr><td>Compilation</td><td><span style="color:var(--amber)">JIT</span> — à l'exécution</td><td><span style="color:var(--green)">AOT</span> — à l'installation</td></tr>
+    <tr><td>Démarrage</td><td>Lent (compilation au lancement)</td><td><span style="color:var(--green)">Rapide (déjà compilé)</span></td></tr>
+    <tr><td>Performance</td><td>Moyenne</td><td><span style="color:var(--green)">Supérieure (~2× plus rapide)</span></td></tr>
+    <tr><td>Espace disque</td><td>Moins d'espace</td><td>Plus d'espace (code natif stocké)</td></tr>
+  </table>
+  </div>
+
+  <div class="tip">Depuis Android 7 (Nougat), ART utilise une combinaison JIT + AOT + profils d'usage pour optimiser les apps les plus utilisées.</div>
+
+  <h2>Librairies natives importantes</h2>
+  <ul>
+    <li><strong>SQLite</strong> — base de données embarquée</li>
+    <li><strong>WebKit</strong> — moteur de rendu web (WebView)</li>
+    <li><strong>OpenGL ES</strong> — graphismes 3D</li>
+    <li><strong>Libc</strong> — bibliothèque C standard</li>
+    <li><strong>Media Framework</strong> — audio/vidéo</li>
+    <li><strong>SSL</strong> — sécurité des communications réseau</li>
+  </ul>
+</div>
+
+<!-- S5: Composants -->
+<div id="s5" class="section">
+  <div class="page-badge"><i class="ti ti-components" style="font-size:12px"></i> Composants</div>
+  <h1>Composants d'une <span class="accent">application Android</span></h1>
+  <p class="subtitle">Les 4 blocs fondamentaux + Widget</p>
+
+  <div class="card-grid">
+    <div class="card" style="border-top:2px solid var(--purple)">
+      <span class="tag tag-purple">Activity</span>
+      <h3 style="margin-top:10px">Activité</h3>
+      <p style="font-size:13px">Un écran visible par l'utilisateur. Chaque activité = une interface. Ex : écran de login, liste de contacts.</p>
+      <p style="font-size:11.5px;color:var(--text3)">Déclarée dans AndroidManifest.xml</p>
+    </div>
+    <div class="card" style="border-top:2px solid #60a5fa">
+      <span class="tag tag-blue">Service</span>
+      <h3 style="margin-top:10px">Service</h3>
+      <p style="font-size:13px">Tâche de fond sans interface. Ex : lecture musique, téléchargement, sync en arrière-plan.</p>
+      <p style="font-size:11.5px;color:var(--text3)">Foreground / Background / Bound</p>
+    </div>
+    <div class="card" style="border-top:2px solid var(--cyan)">
+      <span class="tag tag-teal">Content Provider</span>
+      <h3 style="margin-top:10px">Fournisseur de contenu</h3>
+      <p style="font-size:13px">Partage de données entre apps via URI. Ex : contacts du téléphone accessibles par d'autres apps.</p>
+      <p style="font-size:11.5px;color:var(--text3)">Basé sur des URI (<code>content://</code>)</p>
+    </div>
+    <div class="card" style="border-top:2px solid var(--coral)">
+      <span class="tag tag-coral">Broadcast Receiver</span>
+      <h3 style="margin-top:10px">Récepteur de diffusion</h3>
+      <p style="font-size:13px">Reçoit des événements système ou d'apps. Ex : batterie faible, SMS reçu, réseau disponible.</p>
+      <p style="font-size:11.5px;color:var(--text3)">Enregistré statiquement ou dynamiquement</p>
+    </div>
+    <div class="card" style="border-top:2px solid var(--amber)">
+      <span class="tag tag-amber">Widget</span>
+      <h3 style="margin-top:10px">Widget</h3>
+      <p style="font-size:13px">Mini-vue d'une app sur l'écran d'accueil. Mise à jour périodique. Ex : widget météo, horloge.</p>
+      <p style="font-size:11.5px;color:var(--text3)">AppWidgetProvider + RemoteViews</p>
+    </div>
+  </div>
+
+  <h2>Structure d'un projet Android</h2>
+<pre data-lang="structure">MonApplication/
+├── app/
+│   ├── src/main/
+│   │   ├── java/com.exemple/
+│   │   │   └── MainActivity.java
+│   │   ├── res/
+│   │   │   ├── layout/         ← fichiers XML d'interface
+│   │   │   ├── drawable/       ← images et formes
+│   │   │   ├── values/         ← strings.xml, colors.xml
+│   │   │   └── mipmap/         ← icônes de l'application
+│   │   └── AndroidManifest.xml
+│   └── build.gradle
+└── build.gradle</pre>
+
+  <h2>Types de Services</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Type</th><th>Description</th><th>Exemple</th></tr>
+    <tr><td><span style="color:var(--green)">Foreground</span></td><td>Visible par l'utilisateur (notification)</td><td>Lecteur musique</td></tr>
+    <tr><td><span style="color:var(--amber)">Background</span></td><td>Totalement invisible</td><td>Sync de données</td></tr>
+    <tr><td><span style="color:var(--cyan)">Bound</span></td><td>Lié à une Activity — arrêt quand l'activity se détache</td><td>Streaming vidéo</td></tr>
+  </table>
+  </div>
+</div>
+
+<!-- S6: Cycle de vie -->
+<div id="s6" class="section">
+  <div class="page-badge"><i class="ti ti-refresh" style="font-size:12px"></i> Lifecycle</div>
+  <h1>Cycle de vie d'une <span class="accent">Activity</span></h1>
+  <p class="subtitle">7 méthodes de rappel — de la création à la destruction</p>
+
+  <div class="lifecycle-box">
+    <div class="lc-step"><div class="lc-pill" style="background:rgba(167,139,250,0.12);color:var(--purple);border-color:rgba(167,139,250,0.3)">onCreate()</div><div class="lc-desc">Initialisation : vues, données. Appelé une seule fois.</div></div>
+    <div class="lc-arrow">↓</div>
+    <div class="lc-step"><div class="lc-pill" style="background:rgba(61,220,132,0.1);color:var(--green);border-color:rgba(61,220,132,0.3)">onStart()</div><div class="lc-desc">L'activité devient visible (pas encore interactive).</div></div>
+    <div class="lc-arrow">↓</div>
+    <div class="lc-step"><div class="lc-pill" style="background:rgba(0,212,255,0.1);color:var(--cyan);border-color:rgba(0,212,255,0.3)">onResume()</div><div class="lc-desc">En avant-plan, interactif. L'utilisateur peut agir.</div></div>
+    <div class="lc-arrow">↓ ← <span style="color:var(--green)">L'utilisateur est ici</span></div>
+    <div class="lc-step"><div class="lc-pill" style="background:rgba(251,191,36,0.1);color:var(--amber);border-color:rgba(251,191,36,0.3)">onPause()</div><div class="lc-desc">Partiellement masquée. Sauvegarder l'état.</div></div>
+    <div class="lc-arrow">↓</div>
+    <div class="lc-step"><div class="lc-pill" style="background:rgba(248,113,113,0.1);color:var(--coral);border-color:rgba(248,113,113,0.3)">onStop()</div><div class="lc-desc">Complètement invisible. L'app tourne en fond.</div></div>
+    <div class="lc-arrow">↓</div>
+    <div class="lc-step"><div class="lc-pill" style="background:rgba(248,113,113,0.15);color:#fca5a5;border-color:rgba(248,113,113,0.4)">onDestroy()</div><div class="lc-desc">Détruite définitivement. Libérer ressources.</div></div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3);font-family:var(--mono)">+ onRestart() : si l'activité revient depuis onStop</div>
+  </div>
+
+  <h2>Exemple de code — onCreate</h2>
+<pre data-lang="java">@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    
+    // Récupérer les vues
+    Button btn = findViewById(R.id.monBouton);
+    
+    // Restaurer l'état si rotation/interruption
+    if (savedInstanceState != null) {
+        String val = savedInstanceState.getString("cle");
+    }
+}</pre>
+
+  <h2>Sauvegarde d'état</h2>
+<pre data-lang="java">@Override
+protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putString("cle", maVariable);
+    // Appelé AVANT onStop — préserve l'état lors des rotations
+}</pre>
+
+  <h2>Transitions importantes</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Situation</th><th>Méthodes appelées</th></tr>
+    <tr><td>Lancement de l'app</td><td><code>onCreate → onStart → onResume</code></td></tr>
+    <tr><td>Appel téléphonique entrant</td><td><code>onPause</code></td></tr>
+    <tr><td>Appuyer sur Home</td><td><code>onPause → onStop</code></td></tr>
+    <tr><td>Revenir sur l'app</td><td><code>onRestart → onStart → onResume</code></td></tr>
+    <tr><td>Appuyer sur Retour</td><td><code>onPause → onStop → onDestroy</code></td></tr>
+    <tr><td>Rotation de l'écran</td><td><code>onPause → onStop → onDestroy → onCreate…</code></td></tr>
+  </table>
+  </div>
+</div>
+
+<!-- S7: Intents -->
+<div id="s7" class="section">
+  <div class="page-badge"><i class="ti ti-arrow-right-circle" style="font-size:12px"></i> Communication</div>
+  <h1>Intents et <span class="accent">Intent Filters</span></h1>
+  <p class="subtitle">Mécanisme de communication entre composants Android</p>
+
+  <p>Un <strong style="color:var(--text)">Intent</strong> est un message asynchrone permettant à un composant de demander une action à un autre composant — au sein de la même app ou d'une app différente. C'est le bus de communication d'Android.</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Critère</th><th>Intent Explicite</th><th>Intent Implicite</th></tr>
+    <tr><td>Cible</td><td>Composant précis (classe nommée)</td><td>Action déclarée (n'importe quel composant)</td></tr>
+    <tr><td>Usage</td><td>Navigation interne à l'app</td><td>Déléguer à une autre app</td></tr>
+    <tr><td>Exemple</td><td>Ouvrir MainActivity depuis LoginActivity</td><td>Partager du texte, ouvrir une URL</td></tr>
+    <tr><td>Résolution</td><td>Directe</td><td>Via Intent Filters dans les Manifests</td></tr>
+  </table>
+  </div>
+
+  <h2>Code — Intent Explicite</h2>
+<pre data-lang="java">// Naviguer vers une autre activité
+Intent intent = new Intent(this, DetailsActivity.class);
+intent.putExtra("id_produit", 42);
+intent.putExtra("nom", "Laptop");
+startActivity(intent);
+
+// Dans DetailsActivity.java :
+int id = getIntent().getIntExtra("id_produit", 0);
+String nom = getIntent().getStringExtra("nom");</pre>
+
+  <h2>Code — Intent Implicite</h2>
+<pre data-lang="java">// Ouvrir un site web
+Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setData(Uri.parse("https://www.google.com"));
+startActivity(intent);
+
+// Partager du texte
+Intent shareIntent = new Intent(Intent.ACTION_SEND);
+shareIntent.setType("text/plain");
+shareIntent.putExtra(Intent.EXTRA_TEXT, "Mon texte");
+startActivity(Intent.createChooser(shareIntent, "Partager via"));</pre>
+
+  <h2>Intent Filter dans le Manifest</h2>
+<pre data-lang="xml">&lt;activity android:name=".MainActivity"&gt;
+    &lt;intent-filter&gt;
+        &lt;action android:name="android.intent.action.MAIN" /&gt;
+        &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+    &lt;/intent-filter&gt;
+&lt;/activity&gt;</pre>
+
+  <h2>Actions communes</h2>
+  <ul>
+    <li><code>ACTION_VIEW</code> — Afficher des données (URL, carte, vidéo)</li>
+    <li><code>ACTION_SEND</code> — Partager du contenu</li>
+    <li><code>ACTION_DIAL</code> — Ouvrir le clavier téléphonique</li>
+    <li><code>ACTION_CALL</code> — Appel direct (nécessite permission)</li>
+    <li><code>ACTION_PICK</code> — Sélectionner depuis une source</li>
+    <li><code>ACTION_MAIN</code> — Point d'entrée de l'application</li>
+  </ul>
+</div>
+
+<!-- S8: Manifest & Resources -->
+<div id="s8" class="section">
+  <div class="page-badge"><i class="ti ti-file-code" style="font-size:12px"></i> Configuration</div>
+  <h1>AndroidManifest &amp; <span class="accent">Resources</span></h1>
+  <p class="subtitle">Le fichier de configuration central et les ressources de l'application</p>
+
+  <h2>AndroidManifest.xml</h2>
+  <p>C'est la "carte d'identité" de l'application. Android le lit avant de lancer quoi que ce soit.</p>
+<pre data-lang="xml">&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.exemple.monapp"&gt;
+
+    &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+    &lt;uses-permission android:name="android.permission.CAMERA" /&gt;
+
+    &lt;application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"&gt;
+
+        &lt;activity android:name=".MainActivity"&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name="android.intent.action.MAIN" /&gt;
+                &lt;category android:name="android.intent.category.LAUNCHER" /&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+
+        &lt;service android:name=".MonService" /&gt;
+        &lt;receiver android:name=".MonReceiver" /&gt;
+
+    &lt;/application&gt;
+&lt;/manifest&gt;</pre>
+
+  <h2>Ressources Android — Structure</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Dossier</th><th>Contenu</th><th>Exemple</th></tr>
+    <tr><td><code>res/layout/</code></td><td>Fichiers XML d'interface utilisateur</td><td><code>activity_main.xml</code></td></tr>
+    <tr><td><code>res/drawable/</code></td><td>Images, icônes, formes vectorielles</td><td><code>ic_user.png</code></td></tr>
+    <tr><td><code>res/mipmap/</code></td><td>Icônes de l'app (différentes densités)</td><td><code>ic_launcher.png</code></td></tr>
+    <tr><td><code>res/values/</code></td><td>Chaînes, couleurs, dimensions, styles</td><td><code>strings.xml</code></td></tr>
+    <tr><td><code>res/raw/</code></td><td>Fichiers bruts (sons, JSON)</td><td><code>musique.mp3</code></td></tr>
+    <tr><td><code>res/anim/</code></td><td>Animations</td><td><code>slide_in.xml</code></td></tr>
+  </table>
+  </div>
+
+  <h2>Densités d'écran (DPI)</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Qualificateur</th><th>DPI</th><th>Multiplicateur</th></tr>
+    <tr><td>ldpi</td><td>~120 dpi</td><td>0.75×</td></tr>
+    <tr><td><span style="color:var(--green)">mdpi</span></td><td>~160 dpi</td><td><span style="color:var(--green)">1× (base)</span></td></tr>
+    <tr><td>hdpi</td><td>~240 dpi</td><td>1.5×</td></tr>
+    <tr><td>xhdpi</td><td>~320 dpi</td><td>2×</td></tr>
+    <tr><td>xxhdpi</td><td>~480 dpi</td><td>3×</td></tr>
+    <tr><td>xxxhdpi</td><td>~640 dpi</td><td>4×</td></tr>
+  </table>
+  </div>
+</div>
+
+<!-- S9: SQLite -->
+<div id="s9" class="section">
+  <div class="page-badge"><i class="ti ti-database" style="font-size:12px"></i> Persistance</div>
+  <h1>SQLite dans <span class="accent">Android</span></h1>
+  <p class="subtitle">Base de données relationnelle embarquée — stockage local persistant</p>
+
+  <p>SQLite est une base de données SQL légère, sans serveur, intégrée directement dans Android. Chaque application possède sa propre base, stockée dans <code>/data/data/&lt;package&gt;/databases/</code>.</p>
+
+  <h2>Types de données SQLite</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Type SQLite</th><th>Équivalent Java</th><th>Description</th></tr>
+    <tr><td><span style="color:var(--cyan)">INTEGER</span></td><td>int, long</td><td>Nombres entiers</td></tr>
+    <tr><td><span style="color:var(--cyan)">REAL</span></td><td>float, double</td><td>Nombres décimaux</td></tr>
+    <tr><td><span style="color:var(--cyan)">TEXT</span></td><td>String</td><td>Chaînes de caractères</td></tr>
+    <tr><td><span style="color:var(--cyan)">BLOB</span></td><td>byte[]</td><td>Données binaires</td></tr>
+    <tr><td><span style="color:var(--cyan)">NULL</span></td><td>null</td><td>Valeur nulle</td></tr>
+  </table>
+  </div>
+
+  <h2>SQLiteOpenHelper — Classe essentielle</h2>
+<pre data-lang="java">public class MaBaseDeDonnees extends SQLiteOpenHelper {
+    
+    private static final String NOM_BDD = "maBase.db";
+    private static final int VERSION = 1;
+    
+    public MaBaseDeDonnees(Context context) {
+        super(context, NOM_BDD, null, VERSION);
+    }
+    
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE utilisateurs (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "nom TEXT NOT NULL, " +
+            "email TEXT UNIQUE, " +
+            "age INTEGER)");
+    }
+    
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
+        db.execSQL("DROP TABLE IF EXISTS utilisateurs");
+        onCreate(db);
+    }
+}</pre>
+
+  <h2>Opérations CRUD</h2>
+<pre data-lang="java">// CREATE (Insérer)
+ContentValues values = new ContentValues();
+values.put("nom", "Ali Benali");
+values.put("email", "ali@exemple.dz");
+long id = db.insert("utilisateurs", null, values);
+
+// READ (Lire) — avec Cursor
+Cursor cursor = db.query("utilisateurs",
+    new String[]{"id","nom","email"},
+    "age > ?", new String[]{"18"},
+    null, null, "nom ASC");
+
+while (cursor.moveToNext()) {
+    String nom = cursor.getString(cursor.getColumnIndex("nom"));
+}
+cursor.close(); // Toujours fermer !
+
+// UPDATE / DELETE
+db.update("utilisateurs", updValues, "id = ?", new String[]{"1"});
+db.delete("utilisateurs", "id = ?", new String[]{"1"});</pre>
+
+  <div class="alert">Toujours appeler <code>cursor.close()</code> après utilisation — sinon fuite mémoire !</div>
+</div>
+
+<!-- S10: Web Services -->
+<div id="s10" class="section">
+  <div class="page-badge"><i class="ti ti-cloud" style="font-size:12px"></i> Réseau</div>
+  <h1>Web Services &amp; <span class="accent">Android</span></h1>
+  <p class="subtitle">REST, SOAP, JSON, XML, HttpURLConnection</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Critère</th><th>REST</th><th>SOAP</th></tr>
+    <tr><td>Format</td><td>JSON, XML, texte</td><td>XML uniquement</td></tr>
+    <tr><td>Performance</td><td><span style="color:var(--green)">Légère, rapide</span></td><td><span style="color:var(--coral)">Lourde, verbeux</span></td></tr>
+    <tr><td>Architecture</td><td>Stateless</td><td>Avec/sans état</td></tr>
+    <tr><td>Standardisation</td><td>Conventions</td><td>WSDL, normes W3C</td></tr>
+    <tr><td>Usage mobile</td><td><span style="color:var(--green)">Dominant — APIs modernes</span></td><td>Enterprise, systèmes legacy</td></tr>
+    <tr><td>Exemples</td><td>Twitter API, OpenWeather</td><td>Services bancaires</td></tr>
+  </table>
+  </div>
+
+  <h2>JSON vs XML</h2>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Aspect</th><th>JSON</th><th>XML</th></tr>
+    <tr><td>Lisibilité</td><td><span style="color:var(--green)">Très lisible</span></td><td>Verbeux</td></tr>
+    <tr><td>Taille</td><td><span style="color:var(--green)">Compact</span></td><td>Plus lourd</td></tr>
+    <tr><td>Parsing Android</td><td>JSONObject / Gson</td><td>XmlPullParser / SAX</td></tr>
+  </table>
+  </div>
+
+  <h2>Exemple JSON + Parsing</h2>
+<pre data-lang="java">// Réponse JSON d'une API météo
+{
+  "ville": "Alger",
+  "temperature": 28,
+  "description": "Ensoleillé"
+}
+
+// Parsing en Java Android
+JSONObject obj = new JSONObject(reponseString);
+String ville = obj.getString("ville");
+int temp = obj.getInt("temperature");</pre>
+
+  <h2>HttpURLConnection — Requête GET</h2>
+<pre data-lang="java">// IMPORTANT : toujours dans un Thread ou AsyncTask !
+new Thread(() -> {
+    URL url = new URL("https://api.exemple.com/data");
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+    conn.setConnectTimeout(5000);
+    
+    if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(conn.getInputStream()));
+        // ... lire le résultat
+    }
+    conn.disconnect();
+}).start();</pre>
+
+  <div class="alert">Depuis Android 9 (Pie), toutes les requêtes doivent utiliser HTTPS, ou déclarer une politique de sécurité réseau dans le Manifest.</div>
+
+  <h2>Bibliothèques populaires</h2>
+  <ul>
+    <li><strong>Retrofit</strong> — REST simplifié, basé sur OkHttp (recommandé)</li>
+    <li><strong>Volley</strong> — File d'attente de requêtes Google</li>
+    <li><strong>OkHttp</strong> — Client HTTP bas niveau</li>
+    <li><strong>Gson / Moshi</strong> — Sérialisation/désérialisation JSON</li>
+  </ul>
+</div>
+
+<!-- FLASHCARDS -->
+<div id="fc" class="section">
+  <div class="page-badge"><i class="ti ti-cards" style="font-size:12px"></i> Révision interactive</div>
+  <h1>Flashcards de <span class="accent">révision</span></h1>
+  <p class="subtitle">Cliquez sur une carte pour révéler la réponse</p>
+  <div id="fc-controls">
+    <button onclick="revealAll()">Tout révéler</button>
+    <button onclick="hideAll()">Tout masquer</button>
+    <span id="fc-count"></span>
+  </div>
+  <div id="flashcards-container"></div>
+</div>
+
+<!-- MIND MAPS -->
+<div id="mm" class="section">
+  <div class="page-badge"><i class="ti ti-sitemap" style="font-size:12px"></i> Cartes mentales</div>
+  <h1>Mind <span class="accent">Maps</span></h1>
+  <p class="subtitle">Cartes mentales pour chaque thème majeur</p>
+
+  <h2>Architecture SoC</h2>
+  <div class="mindmap">📱 SoC (System on a Chip)
+├── CPU (Unité centrale)
+│   ├── Cœurs Big (performance)
+│   ├── Cœurs LITTLE (efficacité)
+│   └── Architecture RISC (ARM)
+├── GPU (Graphismes)
+│   ├── Rendu 3D / jeux
+│   └── Accélération ML (GPGPU)
+├── DSP (Signal numérique)
+│   ├── Audio / voix
+│   └── Capteurs
+├── Modem
+│   ├── 4G / 5G
+│   ├── Wi-Fi
+│   └── Bluetooth / NFC
+├── NPU / IA
+│   └── Reconnaissance d'image, voix
+├── ISP (Image)
+│   └── Traitement photo/vidéo
+└── Sécurité (TEE)
+    ├── Biométrie
+    └── Chiffrement</div>
+
+  <h2>Comparaison des OS Mobiles</h2>
+  <div class="mindmap">📲 OS Mobiles
+├── Android (Google)
+│   ├── Open source (AOSP)
+│   ├── Kernel Linux
+│   ├── Java / Kotlin
+│   └── 72% part de marché
+├── iOS (Apple)
+│   ├── Propriétaire (fermé)
+│   ├── Kernel XNU
+│   ├── Swift / Objective-C
+│   └── 27% part de marché
+├── Historiques
+│   ├── Symbian (Nokia) — abandonné 2013
+│   ├── BlackBerry OS — abandonné 2013
+│   ├── Windows Phone — abandonné 2019
+│   └── WebOS (Palm→LG) — Smart TV
+└── Émergents
+    └── HarmonyOS (Huawei) — Chine</div>
+
+  <h2>Couches Android</h2>
+  <div class="mindmap">🤖 Architecture Android (bas → haut)
+├── Couche 1 : Linux Kernel
+│   ├── Drivers matériels
+│   ├── Gestion mémoire & processus
+│   └── Sécurité & IPC (Binder)
+├── Couche 2 : HAL
+│   └── Interface matériel ↔ software
+├── Couche 3 : Runtime + Bibliothèques
+│   ├── ART (Android Runtime)
+│   │   ├── AOT compilation
+│   │   └── Garbage Collector
+│   └── Libs natives (SQLite, WebKit, OpenGL)
+├── Couche 4 : Application Framework
+│   ├── Activity Manager
+│   ├── Content Provider Manager
+│   ├── Window Manager
+│   └── Notification Manager
+└── Couche 5 : Applications
+    ├── Apps système (Contacts, SMS)
+    └── Apps tierces (votre app !)</div>
+
+  <h2>Composants Android</h2>
+  <div class="mindmap">⚙️ Composants d'une App Android
+├── Activity
+│   ├── Un écran = une Activity
+│   ├── Cycle de vie (7 méthodes)
+│   └── Déclarée dans le Manifest
+├── Service
+│   ├── Foreground (notification visible)
+│   ├── Background (invisible)
+│   └── Bound (lié à une Activity)
+├── Content Provider
+│   ├── URI (content://...)
+│   ├── CRUD sur données partagées
+│   └── Ex: Contacts, MediaStore
+├── Broadcast Receiver
+│   ├── Événements système
+│   ├── Statique (Manifest) ou dynamique
+│   └── Ex: réseau, batterie, SMS
+└── Widget
+    ├── AppWidgetProvider
+    ├── RemoteViews
+    └── Mise à jour périodique</div>
+
+  <h2>Cycle de vie — Activity</h2>
+  <div class="mindmap">🔄 Cycle de vie Activity
+├── onCreate()
+│   ├── setContentView()
+│   ├── findViewById()
+│   └── Restaurer Bundle
+├── onStart() — visible, pas interactif
+├── onResume() ← utilisateur actif ici
+├── onPause()
+│   ├── Libérer caméra, capteurs
+│   └── Sauvegarder données légères
+├── onStop()
+│   └── Libérer ressources lourdes
+├── onRestart() → onStart()
+└── onDestroy()
+    └── Libérer tout</div>
+
+  <h2>Types d'Intents</h2>
+  <div class="mindmap">📨 Intents Android
+├── Explicite
+│   ├── Cible nommée (classe précise)
+│   ├── new Intent(this, AutreActivity.class)
+│   └── Usage : navigation interne
+├── Implicite
+│   ├── Action déclarée (ACTION_VIEW...)
+│   ├── Résolu par Intent Filters
+│   └── Usage : déléguer à d'autres apps
+├── Données transportées
+│   ├── putExtra(clé, valeur)
+│   └── getIntent().getExtra(clé)
+└── Intent Filters (dans Manifest)
+    ├── &lt;action&gt; — ce que sait faire l'app
+    ├── &lt;category&gt; — contexte
+    └── &lt;data&gt; — type MIME</div>
+
+  <h2>SQLite Android</h2>
+  <div class="mindmap">🗄️ SQLite dans Android
+├── SQLiteOpenHelper
+│   ├── onCreate() — créer tables
+│   └── onUpgrade() — migration
+├── SQLiteDatabase
+│   ├── getWritableDatabase()
+│   └── getReadableDatabase()
+├── Opérations CRUD
+│   ├── insert(table, null, ContentValues)
+│   ├── query(table, cols, where, args...)
+│   ├── update(table, values, where, args)
+│   └── delete(table, where, args)
+├── Cursor
+│   ├── moveToNext() / moveToFirst()
+│   ├── getString() / getInt()
+│   └── close() — obligatoire !
+└── Types SQL
+    ├── INTEGER, REAL, TEXT, BLOB, NULL</div>
+
+  <h2>REST vs SOAP</h2>
+  <div class="mindmap">🌐 Web Services
+├── REST
+│   ├── Verbes HTTP (GET/POST/PUT/DELETE)
+│   ├── Format JSON (principalement)
+│   ├── Stateless
+│   ├── URL = ressource
+│   └── Léger, rapide, mobile-friendly
+├── SOAP
+│   ├── Enveloppe XML
+│   ├── WSDL (contrat de service)
+│   ├── Lourd, verbeux
+│   └── Enterprise / legacy
+└── Android Networking
+    ├── HttpURLConnection (natif)
+    ├── Retrofit (recommandé)
+    ├── Volley (Google)
+    └── OkHttp (bas niveau)</div>
+</div>
+
+<!-- MNEMONIQUES -->
+<div id="mn" class="section">
+  <div class="page-badge"><i class="ti ti-bulb" style="font-size:12px"></i> Aide-mémoire</div>
+  <h1>Aide-mémoire &amp; <span class="accent">Mnémotechniques</span></h1>
+  <p class="subtitle">Astuces pour retenir les concepts les plus difficiles</p>
+
+  <h2>Cycle de vie — Méthode OSCAR-PSD</h2>
+  <div class="mnemonic">
+    <div class="mnemonic-title">Acronyme</div>
+    <p><strong>O</strong>n <strong>C</strong>réé <strong>S</strong>on <strong>R</strong>éseau, <strong>P</strong>uis <strong>S</strong>tops, <strong>D</strong>étruit</p>
+    <p>= <strong>On</strong>Create → on<strong>S</strong>tart → on<strong>R</strong>esume → on<strong>P</strong>ause → on<strong>S</strong>top → on<strong>D</strong>estroy</p>
+  </div>
+  <div class="mnemonic">
+    <div class="mnemonic-title">Histoire mémorable</div>
+    <p>L'activité est comme un présentateur TV : il <strong>Crée</strong> son émission → elle <strong>Démarre</strong> → il est <strong>Actif</strong> devant la caméra → la pub l'<strong>interrompt</strong> → il va <strong>se reposer</strong> → l'émission est <strong>Annulée</strong></p>
+  </div>
+
+  <h2>Couches Android — "Kali Hate Learning Frameworks Anyway"</h2>
+  <div class="mnemonic">
+    <div class="mnemonic-title">Acronyme (bas → haut)</div>
+    <p><strong>K</strong>ernel → <strong>H</strong>AL → <strong>L</strong>ibraries+Runtime → <strong>F</strong>ramework → <strong>A</strong>pplications</p>
+    <p>= "<strong>K</strong>ali <strong>H</strong>ate <strong>L</strong>earning <strong>F</strong>rameworks <strong>A</strong>nyway ?"</p>
+  </div>
+
+  <h2>CISC vs RISC — Le Chef étoilé vs le Fast-food</h2>
+  <div class="card">
+    <p><strong style="color:var(--coral)">CISC</strong> = Chef étoilé : peu de plats, mais très élaborés, longs à préparer. Puissant mais gourmand.</p>
+    <p style="margin-top:6px"><strong style="color:var(--green)">RISC</strong> = Fast-food : beaucoup de plats simples, préparés ultra-rapidement. Efficace et économique. Parfait pour le mobile !</p>
+  </div>
+
+  <h2>Les 4 composants Android — "ASCB"</h2>
+  <div class="mnemonic">
+    <div class="mnemonic-title">Acronyme</div>
+    <p><strong>A</strong>ctivity • <strong>S</strong>ervice • <strong>C</strong>ontent Provider • <strong>B</strong>roadcast Receiver</p>
+    <p>"<strong>A</strong>ll <strong>S</strong>mart <strong>C</strong>oders <strong>B</strong>uild" — tous les bons développeurs construisent avec ces 4 blocs.</p>
+  </div>
+
+  <h2>Intent Explicite vs Implicite — Le courrier</h2>
+  <div class="card">
+    <p><strong style="color:var(--cyan)">Explicite</strong> = Lettre nominative : vous écrivez le nom exact du destinataire. "Envoyer à M. Dupont, bureau 301." → Adresse précise.</p>
+    <p style="margin-top:6px"><strong style="color:var(--purple)">Implicite</strong> = Petite annonce : "Quelqu'un sait-il imprimer ?" → N'importe qui qui peut le faire répondra.</p>
+  </div>
+
+  <h2>REST vs SOAP — Le SMS vs le Fax</h2>
+  <div class="card">
+    <p><strong style="color:var(--green)">REST</strong> = SMS : court, rapide, efficace, format libre. Tout le monde l'utilise aujourd'hui.</p>
+    <p style="margin-top:6px"><strong style="color:var(--amber)">SOAP</strong> = Fax : formel, enveloppe obligatoire, papier à en-tête, lourd — mais encore utilisé dans les grandes entreprises.</p>
+  </div>
+
+  <h2>Dalvik vs ART — Le Cuisinier vs le Traiteur</h2>
+  <div class="card">
+    <p><strong style="color:var(--amber)">Dalvik (JIT)</strong> = Cuisinier à la commande : lent au premier plat (compilation à l'exécution), mais flexible.</p>
+    <p style="margin-top:6px"><strong style="color:var(--green)">ART (AOT)</strong> = Traiteur qui prépare tout à l'avance : installation plus lente, mais service ultra-rapide ensuite.</p>
+  </div>
+
+  <h2>Densités d'écran — "Les Médailles"</h2>
+  <div class="mnemonic">
+    <div class="mnemonic-title">Du plus petit au plus grand</div>
+    <p>ldpi → mdpi → hdpi → xhdpi → xxhdpi → xxxhdpi</p>
+    <p>"<strong>L</strong>es <strong>M</strong>édailles <strong>H</strong>onorables <strong>X</strong>tra <strong>XX</strong>L <strong>XXX</strong>treme"</p>
+  </div>
+
+  <h2>SQLite CRUD</h2>
+  <div class="mnemonic">
+    <div class="mnemonic-title">Méthodes Android</div>
+    <p><strong>C</strong>reate = <code>insert()</code> &nbsp;|&nbsp; <strong>R</strong>ead = <code>query()</code> &nbsp;|&nbsp; <strong>U</strong>pdate = <code>update()</code> &nbsp;|&nbsp; <strong>D</strong>elete = <code>delete()</code></p>
+    <p>Toujours fermer le <strong>Cursor</strong> et la <strong>Database</strong> — sinon fuite mémoire !</p>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+const flashcardsData = [
+  {q:"Qu'est-ce qu'un SoC ?", a:"System on a Chip : circuit intégré regroupant CPU, GPU, DSP, modem, et autres composants sur une seule puce.", cat:"SoC"},
+  {q:"Quelle est la différence entre CISC et RISC ?", a:"CISC : instructions complexes, variable. RISC : instructions simples et fixes, 1 cycle par instruction. ARM est RISC.", cat:"Architecture"},
+  {q:"Pourquoi ARM domine le mobile ?", a:"Faible consommation énergétique, chaleur réduite, idéal pour batterie limitée.", cat:"Architecture"},
+  {q:"Quel est le rôle du DSP dans un SoC ?", a:"Digital Signal Processor : traite les signaux audio, voix et capteurs sans mobiliser le CPU principal.", cat:"SoC"},
+  {q:"Qu'est-ce que le TEE (Trusted Execution Environment) ?", a:"Enclave sécurisée du SoC qui stocke les clés biométriques, mots de passe et données sensibles, isolée du reste du système.", cat:"SoC"},
+  {q:"Qu'est-ce que la compilation JIT ?", a:"Just-In-Time : le code est compilé au moment de l'exécution, utilisé par Dalvik VM. Plus lent au démarrage.", cat:"Android"},
+  {q:"Qu'est-ce que la compilation AOT ?", a:"Ahead-Of-Time : compilation à l'installation de l'app. Utilisé par ART. Démarrage plus rapide, mais installation plus lente.", cat:"Android"},
+  {q:"Citez les 5 couches de l'architecture Android.", a:"1. Linux Kernel 2. HAL 3. Libraries + Android Runtime (ART) 4. Application Framework 5. Applications", cat:"Android"},
+  {q:"Quel langage de programmation recommande Google pour Android ?", a:"Kotlin (recommandé depuis 2017), Java toujours supporté.", cat:"Android"},
+  {q:"Qu'est-ce qu'une Activity Android ?", a:"Un composant représentant un écran visible de l'application. Chaque écran = une Activity.", cat:"Composants"},
+  {q:"Qu'est-ce qu'un Service Android ?", a:"Composant qui effectue des tâches en arrière-plan sans interface utilisateur. Ex : lecture musique, synchronisation.", cat:"Composants"},
+  {q:"Qu'est-ce qu'un Content Provider ?", a:"Composant qui partage des données entre applications via des URIs de type content://.", cat:"Composants"},
+  {q:"Qu'est-ce qu'un Broadcast Receiver ?", a:"Composant qui reçoit des événements système ou d'applications (batterie faible, SMS, réseau).", cat:"Composants"},
+  {q:"Quelle est la première méthode appelée du cycle de vie d'une Activity ?", a:"onCreate() — initialisation de l'interface, liaison des vues, restauration de l'état.", cat:"Cycle de vie"},
+  {q:"Quelle méthode appeler pour définir le layout d'une Activity ?", a:"setContentView(R.layout.nom_fichier) dans onCreate()", cat:"Cycle de vie"},
+  {q:"Quelle méthode est appelée quand l'Activity est complètement visible et interactive ?", a:"onResume() — l'utilisateur peut interagir.", cat:"Cycle de vie"},
+  {q:"Que se passe-t-il lors d'une rotation d'écran ?", a:"onPause → onStop → onDestroy → onCreate → onStart → onResume (l'Activity est recrée).", cat:"Cycle de vie"},
+  {q:"Comment sauvegarder l'état avant destruction ?", a:"Surcharger onSaveInstanceState(Bundle outState) et utiliser outState.putXxx(clé, valeur).", cat:"Cycle de vie"},
+  {q:"Quelle est la différence entre un Intent explicite et implicite ?", a:"Explicite : cible une classe précise. Implicite : spécifie une action, Android choisit l'app capable.", cat:"Intents"},
+  {q:"Comment démarrer une Activity avec données ?", a:"Intent i = new Intent(this, Cible.class); i.putExtra(clé, valeur); startActivity(i);", cat:"Intents"},
+  {q:"Qu'est-ce qu'un Intent Filter ?", a:"Déclaration dans le Manifest indiquant quels Intents implicites un composant peut traiter (action, category, data).", cat:"Intents"},
+  {q:"Quel Intent Filter déclare le point d'entrée d'une application ?", a:"action: android.intent.action.MAIN + category: android.intent.category.LAUNCHER", cat:"Intents"},
+  {q:"À quoi sert le AndroidManifest.xml ?", a:"Fichier de configuration central : déclare composants, permissions, version min SDK, thème, point d'entrée.", cat:"Manifest"},
+  {q:"Où sont stockés les textes localisables dans Android ?", a:"Dans res/values/strings.xml, accessible via R.string.nom ou getString(R.string.nom).", cat:"Ressources"},
+  {q:"Que contient res/drawable/ ?", a:"Images, icônes vectorielles (SVG/XML), formes et sélecteurs d'état pour les vues.", cat:"Ressources"},
+  {q:"Qu'est-ce que SQLiteOpenHelper ?", a:"Classe Android à étendre pour gérer la création (onCreate) et mise à jour (onUpgrade) de la base de données.", cat:"SQLite"},
+  {q:"Comment insérer des données dans SQLite Android ?", a:"ContentValues cv = new ContentValues(); cv.put(col, val); db.insert(table, null, cv);", cat:"SQLite"},
+  {q:"Qu'est-ce qu'un Cursor dans Android SQLite ?", a:"Pointeur sur les résultats d'une requête. Se déplace avec moveToNext(). Doit toujours être fermé avec close().", cat:"SQLite"},
+  {q:"Quels sont les types de données SQLite ?", a:"INTEGER, REAL, TEXT, BLOB, NULL", cat:"SQLite"},
+  {q:"Quelle est la différence entre REST et SOAP ?", a:"REST : léger, JSON/XML, HTTP. SOAP : lourd, XML uniquement, enveloppe formelle, norme WSDL.", cat:"Web Services"},
+  {q:"Quelle bibliothèque Android est recommandée pour REST ?", a:"Retrofit (basé sur OkHttp) — simplifie les appels REST et la désérialisation JSON.", cat:"Web Services"},
+  {q:"Pourquoi les appels réseau ne peuvent pas être sur le thread principal ?", a:"Android bloque les opérations réseau sur l'UI thread (NetworkOnMainThreadException). Utiliser Thread, AsyncTask, ou Coroutines.", cat:"Web Services"},
+  {q:"Comment parser un objet JSON en Java Android ?", a:"JSONObject obj = new JSONObject(json); String val = obj.getString(clé); int n = obj.getInt(clé);", cat:"Web Services"},
+  {q:"Qu'est-ce que ART et depuis quelle version Android ?", a:"Android Runtime, remplace Dalvik. Par défaut depuis Android 5.0 (Lollipop). Compilation AOT.", cat:"Android"},
+  {q:"Quels sont les 3 types de Services Android ?", a:"Foreground (notification visible), Background (invisible), Bound (lié à un composant).", cat:"Composants"},
+  {q:"Quelle méthode est appelée quand l'Activity devient partiellement cachée ?", a:"onPause() — sauvegarder données légères, libérer la caméra.", cat:"Cycle de vie"},
+  {q:"Que fait findViewById() ?", a:"Retourne une référence à une vue (Button, TextView...) à partir de son identifiant XML R.id.nom.", cat:"Android"},
+  {q:"Quelle densité d'écran est la base de référence (1x) ?", a:"mdpi (Medium DPI, ~160 dpi). Multiplicateur = 1x.", cat:"Ressources"},
+  {q:"Qu'est-ce que le HAL dans Android ?", a:"Hardware Abstraction Layer : couche qui fait le pont entre les drivers matériels et les couches logicielles supérieures.", cat:"Android"},
+  {q:"Comment vérifier si une intention implicite peut être gérée ?", a:"Utiliser intent.resolveActivity(getPackageManager()) — si null, aucune app ne peut gérer l'Intent.", cat:"Intents"},
+  {q:"Que contient le res/mipmap/ ?", a:"Les icônes de lancement (launcher icons) de l'app en différentes résolutions.", cat:"Ressources"}
+];
+
+function renderFlashcards() {
+  const container = document.getElementById('flashcards-container');
+  document.getElementById('fc-count').textContent = flashcardsData.length + ' cartes';
+  container.innerHTML = flashcardsData.map((fc, i) => `
+    <div class="flashcard" onclick="toggleCard(${i})">
+      <div class="fc-q">
+        <span class="fc-num">#${String(i+1).padStart(2,'0')}</span>
+        ${fc.q}
+        <span class="fc-badge">${fc.cat}</span>
+      </div>
+      <div class="fc-a" id="fca${i}">▶ ${fc.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleCard(i) {
+  document.getElementById('fca'+i).classList.toggle('visible');
+}
+
+function revealAll() {
+  document.querySelectorAll('.fc-a').forEach(el => el.classList.add('visible'));
+}
+
+function hideAll() {
+  document.querySelectorAll('.fc-a').forEach(el => el.classList.remove('visible'));
+}
+
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const navMap = {s1:'n1',s2:'n2',s3:'n3',s4:'n4',s5:'n5',s6:'n6',s7:'n7',s8:'n8',s9:'n9',s10:'n10',fc:'nfc',mm:'nmm',mn:'nmn'};
+  if(navMap[id]) document.getElementById(navMap[id]).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+renderFlashcards();
+</script>
+</body>
+</html>
